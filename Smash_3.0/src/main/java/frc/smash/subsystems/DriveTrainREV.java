@@ -7,59 +7,59 @@ import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 public class DriveTrainREV {
 
     // Declaração dos motores para cada roda
-    private CANSparkMax leftFront;
-    private CANSparkMax leftBack;
-    private CANSparkMax rightFront;
-    private CANSparkMax rightBack;
+    private CANSparkMax motorFrontLeft;
+    private CANSparkMax motorBackLeft;
+    private CANSparkMax motorFrontRight;
+    private CANSparkMax motorBackFront;
 
     // Declaração do objeto DifferentialDrive para controlar o sistema de tração
     private DifferentialDrive driveTrain;
 
     // Variáveis para configurar os limites de saída do controlador
-    private double outMax, outMin;
+    private double motorOutMax, motorOutMin;
 
     // Construtor da classe DriveTrainREV
-    public DriveTrainREV(int idLF, int idLB, int idRF, int idRB, int motorType) {
+    public DriveTrainREV(int idFrontLeft, int idBackLeft, int idFrontRight, int idBackRight, int motorType) {
         // Seleciona o tipo de motor com base no parâmetro motorType
         switch (motorType) {
             case 0:
-                leftFront = new CANSparkMax(idLF, MotorType.kBrushed);
-                leftBack = new CANSparkMax(idLB, MotorType.kBrushed);
-                rightFront = new CANSparkMax(idRF, MotorType.kBrushed);
-                rightBack = new CANSparkMax(idRB, MotorType.kBrushed);
+                motorFrontLeft  = new CANSparkMax(idFrontLeft, MotorType.kBrushed);
+                motorBackLeft   = new CANSparkMax(idBackLeft, MotorType.kBrushed);
+                motorFrontRight = new CANSparkMax(idFrontRight, MotorType.kBrushed);
+                motorBackFront  = new CANSparkMax(idBackRight, MotorType.kBrushed);
                 break;
 
             case 1:
-                leftFront = new CANSparkMax(idLF, MotorType.kBrushless);
-                leftBack = new CANSparkMax(idLB, MotorType.kBrushless);
-                rightFront = new CANSparkMax(idRF, MotorType.kBrushless);
-                rightBack = new CANSparkMax(idRB, MotorType.kBrushless);
+                motorFrontLeft  = new CANSparkMax(idFrontLeft, MotorType.kBrushless);
+                motorBackLeft   = new CANSparkMax(idBackLeft, MotorType.kBrushless);
+                motorFrontRight = new CANSparkMax(idFrontRight, MotorType.kBrushless);
+                motorBackFront  = new CANSparkMax(idBackRight, MotorType.kBrushless);
                 break;
         }
 
         // Inicializa o objeto DifferentialDrive com os motores da frente
-        driveTrain = new DifferentialDrive(leftFront, rightFront);
+        driveTrain = new DifferentialDrive(motorFrontLeft, motorFrontRight);
 
         // Define os motores traseiros para seguir os motores da frente
-        leftBack.follow(leftFront);
-        rightBack.follow(rightFront);
+        motorBackLeft.follow(motorFrontLeft);
+        motorBackFront.follow(motorFrontRight);
     }
 
     // Método para definir o valor máximo de saída do controlador
-    public void setOutMax(double outMax) {
-        this.outMax = outMax;
+    public void setMotorOutMax(double outMax) {
+        this.motorOutMax = outMax;
     }
 
     // Método para definir o valor mínimo de saída do controlador
-    public void setOutMin(double outMin) {
-        this.outMin = outMin;
+    public void setMotorOutMin(double outMin) {
+        this.motorOutMin = outMin;
     }
 
     // Método para controlar o sistema de tração (driveTrain) com limites de saída configuráveis
     public void driveTrainController(double forward, double rotation, double inS) {
 
         // Calcula a velocidade com base nos limites de saída configurados
-        double speed = (inS - 1) * (outMax - outMin) / -2 + outMin;
+        double speed = (inS - 1) * (motorOutMax - motorOutMin) / -2 + motorOutMin;
         
         // Aciona o driveTrain com a velocidade ajustada e os parâmetros de controle
         driveTrain.arcadeDrive(speed * forward, speed * rotation);

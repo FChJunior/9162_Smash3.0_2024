@@ -6,6 +6,8 @@ import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.XboxController;
 
 import frc.smash.Subsystems.DriveTrainREV;
+import frc.smash.Subsystems.Intake;
+import frc.smash.Subsystems.Shooter;
 import frc.smash.Assistent.*;
 
 public class Robot extends TimedRobot {
@@ -13,6 +15,8 @@ public class Robot extends TimedRobot {
   private XboxController player2;
 
   private DriveTrainREV driveTrainREV;
+  private Intake intake;
+  private Shooter shooter;
 
   private PIDController distancePID;
   private PIDController anglePID;
@@ -28,8 +32,11 @@ public class Robot extends TimedRobot {
     player2 = new XboxController(1);
 
     driveTrainREV = new DriveTrainREV(1, 2, 3, 4, 0);
-    driveTrainREV.setOutMax(0.7);
-    driveTrainREV.setOutMin(0.4);
+    driveTrainREV.setMotorOutMax(0.7);
+    driveTrainREV.setMotorOutMin(0.4);
+
+    intake = new Intake();
+    shooter = new Shooter();
 
     limelight = new Limelight("limelight", 50.0, 20.0, 10.0);
 
