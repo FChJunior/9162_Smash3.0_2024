@@ -35,7 +35,7 @@ public class Robot extends TimedRobot {
     driveTrainREV.setMotorOutMax(0.7);
     driveTrainREV.setMotorOutMin(0.4);
 
-    intake = new Intake();
+    intake = new Intake(5,6,5);
     shooter = new Shooter();
 
     limelight = new Limelight("limelight", 50.0, 20.0, 10.0);
@@ -68,9 +68,12 @@ public class Robot extends TimedRobot {
   }
 
   @Override
-  public void teleopPeriodic() {
-
+  public void teleopPeriodic()
+  {
     RobotController();
+    IntakeController();
+    ShooterController();
+
   }
 
   void RobotController() {
