@@ -4,6 +4,7 @@ import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.Timer;
 
 import frc.smash.Subsystems.DriveTrainREV;
 import frc.smash.Subsystems.Intake;
@@ -23,6 +24,8 @@ public class Robot extends TimedRobot {
 
   private Limelight limelight;
 
+  private Timer timer;
+
   private double distanceCommand, angleCommand;
 
   @Override
@@ -36,12 +39,12 @@ public class Robot extends TimedRobot {
     driveTrainREV.setMotorOutMin(0.4);
 
     intake = new Intake(5,6,5);
-    shooter = new Shooter();
+    //shooter = new Shooter();
 
     limelight = new Limelight("limelight", 50.0, 20.0, 10.0);
 
-    distancePID = new PIDController(0.30, 0.001, 0.02, 0.4, -0.4, 30);
-    distancePID.setSetpoint(60);
+    distancePID = new PIDController(0.1, 0.001, 0.02, 0.4, -0.4, 30);
+    distancePID.setSetpoint(90);
     anglePID = new PIDController(0.05, 0.001, 0.01, 0.4, -0.4, 30);
     anglePID.setSetpoint(0.1);
 
@@ -59,6 +62,7 @@ public class Robot extends TimedRobot {
   @Override
   public void autonomousPeriodic() {
 
+
   }
 
   @Override
@@ -70,9 +74,9 @@ public class Robot extends TimedRobot {
   @Override
   public void teleopPeriodic()
   {
-    RobotController();
+    //RobotController();
     IntakeController();
-    ShooterController();
+    //ShooterController();
 
   }
 
@@ -92,12 +96,19 @@ public class Robot extends TimedRobot {
       }
 
     } else {
-      driveTrainREV.driveTrainController(player1.getZ(), -player1.getY(), player1.getRawAxis(3));
+      driveTrainREV.driveTrainController(-player1.getZ(), -player1.getY(), player1.getRawAxis(3));
     }
   }
 
   void IntakeController()
   {
+    if(player2.getAButton())
+      intake.IntakeSpeed(0.5, 1);
+    else  if(player2.getBButton())
+      intake.IntakeSpeed(0.5, -1);
+    else
+      intake.IntakeSpeed(0, 0);
+
 
   }
 
