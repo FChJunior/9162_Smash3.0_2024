@@ -1,96 +1,67 @@
 package frc.smash.Subsystems;
 
-import com.ctre.phoenix6.hardware.*;
-import com.revrobotics.CANSparkMax;
-import com.revrobotics.CANSparkLowLevel.MotorType;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.SparkPIDController;
+import com.revrobotics.CANSparkMax;
+import com.revrobotics.CANSparkLowLevel.MotorType;
+import com.ctre.phoenix.motorcontrol.can.WPI_VictorSPX;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class Intake {
-
-    private TalonFX motorIntakeLeft;
-    private TalonFX motorIntakeRight;
-
     private CANSparkMax motorIntakeArm;
-    private RelativeEncoder encoderMotorIntakeArm;
+
+    private WPI_VictorSPX motorIntakeUp;
+    private WPI_VictorSPX motorIntakeDown;
 
     private SparkPIDController intakePIDController;
+    private RelativeEncoder encoderMotorIntakeArm;
     private double kP, kI, kD, kIz, kFF, kMaxOutput, kMinOutput;
-    private double p, i, d, iz, ff, max, min;
 
-    public Intake(int idMotorIntakeLeft, int idMotorIntakeRight, int idMotorIntakeArm)
-    {
-        motorIntakeLeft = new TalonFX(idMotorIntakeLeft, "rio");
-        motorIntakeRight = new TalonFX(idMotorIntakeRight, "rio");
-
+    public Intake(int idMotorIntakeArm, int idMotorIntakeUp, int idmotorIntakeDown) {
         motorIntakeArm = new CANSparkMax(idMotorIntakeArm, MotorType.kBrushless);
-
+        motorIntakeUp = new WPI_VictorSPX(idMotorIntakeUp);
+        motorIntakeDown = new WPI_VictorSPX(idmotorIntakeDown);
+        
+        motorIntakeArm.restoreFactoryDefaults();
         encoderMotorIntakeArm = motorIntakeArm.getEncoder();
+        encoderMotorIntakeArm.setPosition(0);
+        intakePIDController = motorIntakeArm.getPIDController();
         SetupPID();
     }
 
-    private void SetupPID()
-    {
-                // PID coefficients
-                kP = 0.1;
-                kI = 1e-4;
-                kD = 0;
-                kIz = 0;
-                kFF = 0;
-                kMaxOutput = 0.5;
-                kMinOutput = -0.5;
-        
-                // set PID coefficients
-                intakePIDController.setP(kP);
-                intakePIDController.setI(kI);
-                intakePIDController.setD(kD);
-                intakePIDController.setIZone(kIz);
-                intakePIDController.setFF(kFF);
-                intakePIDController.setOutputRange(kMinOutput, kMaxOutput);
+    private void SetupPID() {
+        kP = 0.05;
+        kI = 1e-4;
+        kD = 1;
+        kIz = 0;
+        kFF = 0;
+        kMaxOutput = 0.2;
+        kMinOutput = -0.2;
+
+        // set PID coefficients
+        intakePIDController.setP(kP); 
+        intakePIDController.setI(kI);
+        intakePIDController.setD(kD);
+        intakePIDController.setIZone(kIz);
+        intakePIDController.setFF(kFF);
+        intakePIDController.setOutputRange(kMinOutput, kMaxOutput);
+
     }
 
-    public void MovePosition(double position)
-    {
-        PIDWrite();
+    public void MovePosition(double position) {
+        //PIDWrite();
         intakePIDController.setReference(position, CANSparkMax.ControlType.kPosition);
         SmartDashboard.putNumber("ProcessVariable", encoderMotorIntakeArm.getPosition());
     }
-    
-    private void PIDWrite()
-    {
-        if ((p != kP)) {
-            intakePIDController.setP(p);
-            kP = p;
-        }
-        if ((i != kI)) {
-            intakePIDController.setI(i);
-            kI = i;
-        }
-        if ((d != kD)) {
-            intakePIDController.setD(d);
-            kD = d;
-        }
-        if ((iz != kIz)) {
-            intakePIDController.setIZone(iz);
-            kIz = iz;
-        }
-        if ((ff != kFF)) {
-            intakePIDController.setFF(ff);
-            kFF = ff;
-        }
-        if ((max != kMaxOutput) || (min != kMinOutput)) {
-            intakePIDController.setOutputRange(min, max);
-            kMinOutput = min;
-            kMaxOutput = max;
-        }
 
+    public void IntakeGet(double speed) {
+        motorIntakeUp.set(-speed);
+        motorIntakeDown.set(-speed);
     }
 
-    public void IntakeSpeed(double speed, int direction)
+    public void setPosition(int position)
     {
-        motorIntakeLeft.set(speed * direction);
-        motorIntakeRight.set(-speed * direction);
+        encoderMotorIntakeArm.setPosition(position);
     }
 }

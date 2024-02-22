@@ -2,6 +2,7 @@ package frc.smash.Assistent;
 
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class Limelight {
 
@@ -11,11 +12,15 @@ public class Limelight {
     private double mountAngle;
     private double targetValidate;
 
-    public Limelight(String tableName, double targetHeight, double cameraHeight, double mountAngle) {
+    public Limelight(String tableName, double cameraHeight, double mountAngle) {
         table = NetworkTableInstance.getDefault().getTable(tableName);
-        this.targetHeight = targetHeight;
         this.cameraHeight = cameraHeight;
         this.mountAngle = mountAngle;
+    }
+
+    public void setTargetHeight(double targetHeight)
+    {
+        this.targetHeight = targetHeight;
     }
 
     public double getDistanceToTarget() {
@@ -23,6 +28,7 @@ public class Limelight {
         double verticalOffset = table.getEntry("ty").getDouble(0.0);
 
         double distance = calculateDistance(horizontalOffset, verticalOffset, targetHeight, cameraHeight, mountAngle);
+        SmartDashboard.putNumber("Distance", distance);
         return distance;
     }
 
