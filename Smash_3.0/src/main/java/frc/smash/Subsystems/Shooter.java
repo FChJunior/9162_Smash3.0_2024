@@ -16,6 +16,6 @@ public class Shooter {
     public void ShooterSpeed(double speed)
     {
         motorShooterLeft.set(speed);
-        motorShooterRight.set(-speed);   
+        motorShooterRight.set(speed);   
     }
 }

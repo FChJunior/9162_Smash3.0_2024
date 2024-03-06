@@ -1,11 +1,11 @@
 package frc.smash;
 
 import edu.wpi.first.wpilibj.TimedRobot;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.XboxController;
-import edu.wpi.first.wpilibj.Timer;
 
 import frc.smash.Subsystems.*;
 import frc.smash.Assistent.*;
@@ -13,33 +13,34 @@ import frc.smash.Assistent.*;
 public class Robot extends TimedRobot {
   private Joystick player1;
   private XboxController player2;
+  private Timer timer;
 
   private DriveTrainREV driveTrainREV;
   private Intake intake;
   private Shooter shooter;
-  private Climb climb;
+  // private Climb climb;
 
   private PIDController distancePID;
   private PIDController anglePID;
 
   private Limelight limelight;
 
-  private Timer timer;
-
   private double distanceCommand, angleCommand;
 
   @Override
   public void robotInit() {
-    player1 = new Joystick(1);
-    player2 = new XboxController(0);
+    player1 = new Joystick(0);
+    player2 = new XboxController(1);
 
+    timer = new Timer();
     driveTrainREV = new DriveTrainREV(1, 2, 3, 4);
     driveTrainREV.setMotorOutMax(1);
     driveTrainREV.setMotorOutMin(0.5);
 
     intake = new Intake(5, 1, 2);
     shooter = new Shooter(5, 6);
-    climb = new Climb();
+
+    // climb = new Climb();
 
     limelight = new Limelight("limelight", 57.0, 1);
 
@@ -52,47 +53,24 @@ public class Robot extends TimedRobot {
 
   @Override
   public void autonomousInit() {
-    timer.start();
     intake.setPosition(0);
+    timer.reset();
+    timer.start();
   }
 
   @Override
   public void autonomousPeriodic() {
-    shooter.ShooterSpeed(0.4);
 
-    if (timer.get() == 0.5) {
-      intake.IntakeGet(-1);
-    }
-
-    if (timer.get() == 1.5) {
-      intake.MovePosition(28);
+    if (timer.get() >= 0 && timer.get() < 4) {
       shooter.ShooterSpeed(0);
-    }
-
-    if (timer.get() >= 2 && timer.get() < 4) {
-      intake.IntakeGet(1);
-      distancePID.setSetpoint(100);
-      distanceCommand = distancePID.calculate(limelight.getDistanceToTarget());
-      angleCommand = anglePID.calculate(limelight.getAngleToTarget());
-      driveTrainREV.driveTrainController(0, -0.4);
-    }
-
-    if (timer.get() == 4) {
-      intake.MovePosition(0);
       intake.IntakeGet(0);
+      driveTrainREV.driveTrainController(0, 0.4);
     }
 
-    if (timer.get() == 5) {
-      shooter.ShooterSpeed(0.5);
+    if (timer.get() >= 4 && timer.get() < 5) {
+      driveTrainREV.driveTrainController(0, 0.0);
     }
 
-    if (timer.get() == 6) {
-      intake.IntakeGet(-1);
-    }
-
-    if (timer.get() == 7) {
-      shooter.ShooterSpeed(0);
-    }
   }
 
   @Override
@@ -101,6 +79,7 @@ public class Robot extends TimedRobot {
     shooter.ShooterSpeed(0);
     intake.MovePosition(0);
     intake.IntakeGet(0);
+    intake.setPosition(0);
   }
 
   @Override
@@ -108,7 +87,7 @@ public class Robot extends TimedRobot {
     RobotController();
     IntakeController();
     ShooterController();
-    ClimbController();
+    // ClimbController();
   }
 
   void RobotController() {
@@ -134,14 +113,15 @@ public class Robot extends TimedRobot {
 
   void IntakeController() {
     if (player2.getRightBumperPressed()) {
-      intake.MovePosition(28);
-    } else if (player2.getLeftBumperPressed()) {
       intake.MovePosition(0);
+    } else if (player2.getLeftBumperPressed()) {
+      intake.MovePosition(28.5);
     }
 
     if (player2.getXButton()) // botão de sugar
     {
       intake.IntakeGet(1);
+
     } else if (player2.getYButton())
       intake.IntakeGet(-1);// botão de cuspir
 
@@ -151,20 +131,20 @@ public class Robot extends TimedRobot {
 
   void ShooterController() {
     if (player2.getAButton())
-      shooter.ShooterSpeed(-0.55);
+      shooter.ShooterSpeed(-1);
     else if (player2.getBButton())
-      shooter.ShooterSpeed(-0.2);
+      shooter.ShooterSpeed(-0.1);
     else
       shooter.ShooterSpeed(0);
   }
 
-  void ClimbController() {
-    climb.ClimbingDown(player2.getLeftY() == -1, player2.getRightY() == -1);
-    climb.ClimbingUP(player2.getLeftY() == 1, player2.getRightY() == 1);
+  // void ClimbController() {
+  // climb.ClimbingDown(player2.getLeftY() == -1, player2.getRightY() == -1);
+  // climb.ClimbingUP(player2.getLeftY() == 1, player2.getRightY() == 1);
 
-    if (player2.getStartButtonPressed())
-      climb.compressor.enableDigital();
-    if (player2.getBackButtonPressed())
-      climb.compressor.disable();
-  }
+  // if (player2.getStartButtonPressed())
+  // climb.compressor.enableDigital();
+  // if (player2.getBackButtonPressed())
+  // climb.compressor.disable();
+  // }
 }

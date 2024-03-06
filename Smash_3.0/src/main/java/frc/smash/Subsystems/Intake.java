@@ -31,9 +31,9 @@ public class Intake {
     }
 
     private void SetupPID() {
-        kP = 0.05;
-        kI = 1e-4;
-        kD = 1;
+        kP = 0.15;
+        kI = 1e-5;
+        kD = 0;
         kIz = 0;
         kFF = 0;
         kMaxOutput = 0.2;
